@@ -1,0 +1,45 @@
+name: Generate Repository Index
+
+on:
+  push:
+    paths:
+      - '**.json'
+      - '.github/workflows/generate-index.yml'
+  workflow_dispatch:
+
+jobs:
+  generate-index:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Generate CSV index
+        run: |
+          python .github/scripts/generate_index.py
+      
+      - name: Commit to index branch
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Create or checkout the index branch
+          git fetch origin index 2>/dev/null || true
+          git checkout -B index origin/index 2>/dev/null || git checkout -B index
+          
+          # Copy the generated CSV from the main checkout
+          git checkout ${{ github.sha }} -- .indexes/vocabulary_index.csv
+          
+          # Commit and push if there are changes
+          git add .indexes/vocabulary_index.csv
+          if ! git diff --quiet --cached; then
+            git commit -m "Update vocabulary index [skip ci]"
+            git push origin index
+          else
+            echo "No changes to commit"
+          fi
