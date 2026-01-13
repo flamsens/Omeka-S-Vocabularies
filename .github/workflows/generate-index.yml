@@ -22,6 +22,7 @@ jobs:
       - name: Generate CSV index
         run: |
           python .github/scripts/generate_index.py
+          cp vocabulary_index.csv /tmp/vocabulary_index.csv
       
       - name: Commit to index branch
         run: |
@@ -33,7 +34,7 @@ jobs:
           git checkout -B index origin/index 2>/dev/null || git checkout -B index
           
           # Copy the generated CSV from the main checkout
-          git checkout ${{ github.sha }} -- vocabulary_index.csv
+          cp /tmp/vocabulary_index.csv vocabulary_index.csv
           
           # Commit and push if there are changes
           git add vocabulary_index.csv
