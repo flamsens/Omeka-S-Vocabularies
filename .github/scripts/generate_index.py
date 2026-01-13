@@ -12,8 +12,8 @@ from datetime import datetime
 # Configuration
 REPO_ROOT = Path(__file__).parent.parent.parent
 JSON_PATTERN = "*.json"
-EXCLUDE_DIRS = {".git", ".github", ".indexes", "node_modules", ".venv", "venv"}
-OUTPUT_DIR = REPO_ROOT / ".indexes"
+EXCLUDE_DIRS = {".git", ".github", ".venv", "venv"}
+OUTPUT_DIR = REPO_ROOT
 OUTPUT_FILE = OUTPUT_DIR / "vocabulary_index.csv"
 
 # CSV column headers
@@ -28,11 +28,10 @@ CSV_HEADERS = [
     "last_modified"
 ]
 
-
 def should_exclude_path(path: Path) -> bool:
     """Check if path should be excluded from indexing."""
     for part in path.parts:
-        if part.startswith(".") and part in EXCLUDE_DIRS:
+        if part in EXCLUDE_DIRS:
             return True
     return False
 
@@ -87,9 +86,9 @@ def generate_index():
     # Find all JSON files
     json_files = find_json_files(REPO_ROOT)
     
+    # Output message if no files found
     if not json_files:
         print("No JSON files found to index.")
-        return
     
     # Extract metadata from each file
     records = []

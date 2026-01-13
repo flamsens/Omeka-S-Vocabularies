@@ -33,10 +33,10 @@ jobs:
           git checkout -B index origin/index 2>/dev/null || git checkout -B index
           
           # Copy the generated CSV from the main checkout
-          git checkout ${{ github.sha }} -- .indexes/vocabulary_index.csv
+          git checkout ${{ github.sha }} -- vocabulary_index.csv
           
           # Commit and push if there are changes
-          git add .indexes/vocabulary_index.csv
+          git add vocabulary_index.csv
           if ! git diff --quiet --cached; then
             git commit -m "Update vocabulary index [skip ci]"
             git push origin index
